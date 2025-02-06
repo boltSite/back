@@ -14,10 +14,10 @@ app.use(express.urlencoded({ extended: true }));
 // 파일 저장을 위한 multer 설정
 const upload = multer({ storage: multer.memoryStorage() });
 
-app.post('/send-email', upload.single('file'), async (req, res) => {
+app.post('/send-email', upload.array('files'), async (req, res) => {
     try {
         const { title, message, contact, email } = req.body;
-        const file = req.file;
+        const files = req.files; // 여러 개의 파일 처리
 
         let transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -29,18 +29,15 @@ app.post('/send-email', upload.single('file'), async (req, res) => {
 
         let mailOptions = {
             from: process.env.GMAIL_USER,
-            to: process.env.GMAIL_USER, //"dongsanbolt@daum.net"
+            to: process.env.GMAIL_USER,
             subject: title,
             text: `내용: ${message}\n연락처: ${contact}\n이메일: ${email}`,
+            attachments: files.length > 0 ? files.map(file => ({
+                filename: iconv.decode(Buffer.from(file.originalname, 'binary'), 'utf-8'),
+                content: file.buffer,
+                contentDisposition: 'attachment' // 파일 첨부 형식 지정
+            })) : undefined
         };
-
-        // 파일이 있을 경우 첨부파일 추가
-        if (file) {
-            mailOptions.attachments = [{
-                filename: `=?UTF-8?B?${Buffer.from(file.originalname).toString('base64')}?=`,
-                content: file.buffer
-            }];
-        }
 
         await transporter.sendMail(mailOptions);
         res.json({ success: true });
