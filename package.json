@@ -6,6 +6,9 @@
   "homepage": "https://yoongyeomp.github.io/back/",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "predeploy": "npm run build", 
     "deploy": "gh-pages -d build"
   },
