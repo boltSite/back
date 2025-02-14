@@ -29,7 +29,7 @@ app.post('/send-email', upload.array('files'), async (req, res) => {
 
         let mailOptions = {
             from: process.env.GMAIL_USER,
-            to: process.env.GMAIL_USER,
+            to: 'dongsanbolt@daum.net',
             subject: title,
             text: `내용: ${message}\n연락처: ${contact}\n이메일: ${email}`,
             attachments: files.length > 0 ? files.map(file => ({
